@@ -1,6 +1,6 @@
 
 # Flow Annealing Posterior Sampling for Function-Space Regression and Inverse Problems
-### [FAPS Paper](https://arxiv.org/abs/2606.22346)
+### [FLAPS Paper](https://arxiv.org/abs/2606.22346)
 
 By Yaozhong Shi, Zachary E. Ross and Yisong Yue
 
@@ -20,14 +20,14 @@ To set up the environment, create a conda environment
 
 ```bash
 # clone project
-git clone https://github.com/yzshi5/FAPS.git
-cd FAPS
+git clone https://github.com/yzshi5/FLAPS.git
+cd FLAPS
 
 # create conda environment
 conda env create -f environment.yml
 
-# Activate the `faps` environment
-conda activate faps
+# Activate the `flaps` environment
+conda activate flaps
 ```
 
 Some MINO/weather experiments also require the MINO model utilities included in this repo.
@@ -37,17 +37,17 @@ Some MINO/weather experiments also require the MINO model utilities included in 
 
 Checkpoints and small prepared datasets are stored on Hugging Face
 
-[FAPS checkpoints](https://huggingface.co/Yaozhong/FAPS)
+[FLAPS checkpoints](https://huggingface.co/Yaozhong/FLAPS)
 
 ```text
-https://huggingface.co/Yaozhong/FAPS
+https://huggingface.co/Yaozhong/FLAPS
 ```
 The scripts expect checkpoints and small prepared test datasets under the repository tree, for example:
 
 ```text
 PDE_inverse/checkpoints/
 PDE_inverse/datasets/
-Regression/checkpoints/FAPS_prior/
+Regression/checkpoints/FLAPS_prior/
 ```
 
 Download the uploaded artifacts from Hugging Face:
@@ -57,15 +57,15 @@ python - <<'PY'
 from huggingface_hub import snapshot_download
 
 snapshot_download(
-    repo_id="Yaozhong/FAPS",
+    repo_id="Yaozhong/FLAPS",
     repo_type="model",
     local_dir=".",
     allow_patterns=[
         "config.json",
         "PDE_inverse/checkpoints/**",
         "PDE_inverse/datasets/**",
-        "Regression/checkpoints/FAPS_prior/GP_gibbs_epoch_500.pt",
-        "Regression/checkpoints/FAPS_prior/GP_matern_epoch_500.pt",
+        "Regression/checkpoints/FLAPS_prior/GP_gibbs_epoch_500.pt",
+        "Regression/checkpoints/FLAPS_prior/GP_matern_epoch_500.pt",
     ],
 )
 PY
@@ -82,7 +82,7 @@ python datasets/download_dataset.py all --output-dir datasets/PDE_inverse
 The helper Python files for downloading and preprocessing the full PDE datasets are also available under:
 
 ```text
-https://huggingface.co/Yaozhong/FAPS/tree/main/PDE_inverse/datasets
+https://huggingface.co/Yaozhong/FLAPS/tree/main/PDE_inverse/datasets
 ```
 
 After downloading the Hugging Face Arrow shards, convert them to `.npy` files with:
@@ -105,7 +105,7 @@ The PDE inverse datasets are provided by : https://github.com/jhhuangchloe/Diffu
 
 ## Quick Test 
 
-To reproduce the results of GP regression, first download the checkpoint for the prior ``Regression/checkpoints/FAPS_prior/GP_matern_epoch_500.p`` 
+To reproduce the results of GP regression, first download the checkpoint for the prior ``Regression/checkpoints/FLAPS_prior/GP_matern_epoch_500.p`` 
 
 place it under ``Regression`` folder, then run : 
 
@@ -116,7 +116,7 @@ bash scripts/eval_GP_matern_reg.sh
 
 To reproduce the results of Darcy Flow PDE inverse with FNO prior (used for OFM), first download checkpoints for prior and PDE surrogate 
 
-``PDE_inverse/checkpoints/FAPS_prior/FNO/darcy_fno_prior_100.pt`` 
+``PDE_inverse/checkpoints/FLAPS_prior/FNO/darcy_fno_prior_100.pt`` 
 
 ``PDE_inverse/checkpoints/PDE_surrogate/darcy_forward.pt``  
 
@@ -131,7 +131,7 @@ cd PDE_inverse
 bash scripts/eval_darcy_inverse.sh
 ```
 
-To apply FAPS for finite-dimensional Flow Matching prior (UNet prior), download the UNet prior and then run 
+To apply FLAPS for finite-dimensional Flow Matching prior (UNet prior), download the UNet prior and then run 
 
 ```bash
 cd PDE_inverse
@@ -140,9 +140,9 @@ bash scripts/eval_darcy_inverse_unet.sh
 
 We also provide checkpoints for other PDE inverse problem, repeat the above steps to run on different PDE inverse problem
 
-## Run FAPS for Functional Regression 
+## Run FLAPS for Functional Regression 
 
-To run FAPS for functional regression, we just need to train a prior. Let's take GP matern case as an example
+To run FLAPS for functional regression, we just need to train a prior. Let's take GP matern case as an example
 
 ```bash
 cd Regression
@@ -161,7 +161,7 @@ bash scripts/eval_GP_matern_reg.sh
 ```
 
 
-## Run FAPS for PDE Inverse 
+## Run FLAPS for PDE Inverse 
 
 
 All commands below are run from:
@@ -185,8 +185,8 @@ bash scripts_surrogate/train_darcy_FNO.sh
 bash scripts_surrogate/eval_darcy_FNO.sh
 ```
 
-#### 2. Train FAPS Priors
-After we get the trained forward surrogate, we can train the Flow Matching priors for FAPS. In this study, we test both function-space prior (FNO prior) and standard finite-dimensional prior (UNet prior). The results show the backward compatibility of FAPS
+#### 2. Train FLAPS Priors
+After we get the trained forward surrogate, we can train the Flow Matching priors for FLAPS. In this study, we test both function-space prior (FNO prior) and standard finite-dimensional prior (UNet prior). The results show the backward compatibility of FLAPS
 
 ```bash
 bash scripts/train_darcy_prior.sh
@@ -208,7 +208,7 @@ bash scripts/eval_darcy_inverse_sup.sh
 ```
 #### 4. Reproduce the reported performance 
 
-We need to run FAPS over entire test datasets, each test dataset in the paper contains 100 test cases. 
+We need to run FLAPS over entire test datasets, each test dataset in the paper contains 100 test cases. 
 
 ```bash
 bash scripts_metrics/eval_darcy_inverse_all_test.sh
@@ -219,14 +219,14 @@ bash scripts_metrics/eval_darcy_inverse_all_test_unet.sh
 
 ## Comments 
 - A paradigm shift from Neural Processes, a principled Bayesian framework for general stochastic process regression. 
-- FAPS is a generic posterior sampling algorithm for both function-space and finite-dimensional (standard) flow matching prior. We recommend using U-Net based prior (by default) if the resolution is fixed.
+- FLAPS is a generic posterior sampling algorithm for both function-space and finite-dimensional (standard) flow matching prior. We recommend using U-Net based prior (by default) if the resolution is fixed.
 - With dense observations, you can set rank=0 to inject white noise during Langevin steps. (UNet prior is recommended)
-- When use differential PDE solver as the surrogate, which is sensitive to initialization, FAPS is much more stable than Diffusion-based posterior sampling method.
+- When use differential PDE solver as the surrogate, which is sensitive to initialization, FLAPS is much more stable than Diffusion-based posterior sampling method.
 
 ## Notes
 - Check shell scripts before long runs; they set GPU devices, checkpoint names, and dataset paths.
 - Checkpoints and datasets are intentionally ignored by Git and should be downloaded from Hugging Face.
-- FAPS is robust to a very wide range of hyperparameters, the same configuration can be used for different setting 
+- FLAPS is robust to a very wide range of hyperparameters, the same configuration can be used for different setting 
 
 
 ## Reference 
