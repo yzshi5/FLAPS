@@ -1,4 +1,4 @@
-name: faps
+name: flaps
 channels:
   - pyg
   - anaconda
