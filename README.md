@@ -4,7 +4,7 @@
 
 By Yaozhong Shi, Zachary E. Ross and Yisong Yue
 
-## Model Architecture 
+## Method Overview
 ![image](figs/overview.png)
 
 ## Stochastic-Process Regression 
