@@ -1,6 +1,6 @@
 
-# Flow Annealing Posterior Sampling for Function-Space Regression and Inverse Problems (NeurIPS 2026)
-### [FLAPS Paper](https://arxiv.org/abs/2606.22346)
+# Flow Annealing Posterior Sampling for Function-Space Regression and Inverse Problems 
+### [FLAPS Paper](https://arxiv.org/abs/2606.22346) [NeurIPS 2026]
 
 By Yaozhong Shi, Zachary E. Ross and Yisong Yue
 
