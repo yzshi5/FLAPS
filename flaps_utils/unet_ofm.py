@@ -1,5 +1,5 @@
 import torch
-from faps_utils.unet_nD import UNetModelWrapper
+from flaps_utils.unet_nD import UNetModelWrapper
 
 """
 Simplified version using only the UNet backbone.

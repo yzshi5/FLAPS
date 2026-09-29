@@ -22,8 +22,8 @@ PDE_EVAL_ROOT = Path(__file__).resolve().parent
 if str(PDE_EVAL_ROOT) not in sys.path:
     sys.path.insert(0, str(PDE_EVAL_ROOT))
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
 
 import PDE_inverse as inverse
 
@@ -336,7 +336,7 @@ def main() -> None:
         device=cfg.device,
     )
 
-    posterior = inverse.run_surrogate_regression_FAPS(
+    posterior = inverse.run_surrogate_regression_FLAPS(
         G=prior,
         forward_model=forward_model,
         dims=cfg.dims,

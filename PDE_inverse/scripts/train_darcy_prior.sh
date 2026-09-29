@@ -7,7 +7,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${PDE_ROOT}/pde_train/OFM_prior_2D.py" \
   --pde "darcy" \
   --data-path "${PDE_ROOT}/datasets/darcy/darcy_flow.npy" \
-  --save-dir "${PDE_ROOT}/checkpoints/FAPS_prior/FNO" \
+  --save-dir "${PDE_ROOT}/checkpoints/FLAPS_prior/FNO" \
   --checkpoint-name "darcy_fno_prior_100.pt" \
   --figure-dir "${PDE_ROOT}/outputs/OFM/darcy_input_prior_full" \
   --device "cuda:0" \

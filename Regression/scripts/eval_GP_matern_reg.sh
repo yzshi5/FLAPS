@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${REGRESSION_ROOT}/reg_eval/GP_matern_reg.py" \
-  --model-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
-  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --model-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
+  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --results-dir "${REGRESSION_ROOT}/outputs/Regression_results/GP_matern_reg" \
   --device "cuda:0" \
   --seed 100 \

@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${REGRESSION_ROOT}/reg_train/OFM_prior_GP_gibbs.py" \
-  --save-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --save-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --checkpoint-name "GP_gibbs_epoch_500.pt" \
   --figure-dir "${REGRESSION_ROOT}/outputs/OFM/GP_gibbs" \
   --device "cuda:0" \

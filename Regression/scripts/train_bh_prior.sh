@@ -7,7 +7,7 @@ REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${REGRESSION_ROOT}/reg_train/OFM_prior_2D.py" \
   --dataset "bh" \
   --data-path "/net/wintermute/scratch/agao3/OpFlow/Unoflow/m_1_1_40_all.npy" \
-  --save-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --save-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --checkpoint-name "bh_epoch_300.pt" \
   --figure-dir "${REGRESSION_ROOT}/outputs/OFM/BH" \
   --device "cuda:0" \

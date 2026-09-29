@@ -3,10 +3,10 @@
 Convert Hugging Face dataset Arrow shards into one .npy file per dataset folder.
 
 Input example:
-    /oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse/darcy_hf/data-00000-of-00027.arrow
+    /oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse/darcy_hf/data-00000-of-00027.arrow
 
 Output example:
-    /oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse_npy/darcy_flow.npy
+    /oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse_npy/darcy_flow.npy
 """
 
 from __future__ import annotations

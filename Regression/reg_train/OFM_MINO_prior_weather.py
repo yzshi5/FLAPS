@@ -22,13 +22,13 @@ for root in (REPO_ROOT, REGRESSION_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-from faps_utils.models.mino_modules.conditioner_timestep import ConditionerTimestep
-from faps_utils.models.mino_modules.decoder_perceiver import DecoderPerceiver
-from faps_utils.models.mino_modules.encoder_supernodes_gno_cross_attention import (
+from flaps_utils.models.mino_modules.conditioner_timestep import ConditionerTimestep
+from flaps_utils.models.mino_modules.decoder_perceiver import DecoderPerceiver
+from flaps_utils.models.mino_modules.encoder_supernodes_gno_cross_attention import (
     EncoderSupernodes,
 )
-from faps_utils.models.mino_transformer import MINO
-from faps_utils.ofm_ind_seq_likelihood import OFMModel
+from flaps_utils.models.mino_transformer import MINO
+from flaps_utils.ofm_ind_seq_likelihood import OFMModel
 
 
 @dataclass(frozen=True)
@@ -127,7 +127,7 @@ def parse_args() -> argparse.Namespace:
         description="Train and/or evaluate OFM on global weather climate field."
     )
     parser.add_argument("--data-path", type=Path, required=True)
-    parser.add_argument("--save-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FAPS_prior")
+    parser.add_argument("--save-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FLAPS_prior")
     parser.add_argument("--checkpoint-name", type=str, default="weather_epoch_200.pt")
     parser.add_argument("--figure-dir", type=Path, default=REGRESSION_ROOT / "outputs" / "OFM" / "weather")
     parser.add_argument("--device", type=str, default="cuda:2" if torch.cuda.is_available() else "cpu")

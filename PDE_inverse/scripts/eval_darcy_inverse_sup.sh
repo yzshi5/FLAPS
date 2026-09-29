@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_eval/PDE_inverse_sup.py" \
   --pde "darcy" \
-  --prior-path "${PDE_ROOT}/checkpoints/FAPS_prior/FNO/darcy_fno_prior_100.pt" \
+  --prior-path "${PDE_ROOT}/checkpoints/FLAPS_prior/FNO/darcy_fno_prior_100.pt" \
   --forward-ckpt "${PDE_ROOT}/checkpoints/PDE_surrogate/darcy_forward.pt" \
   --base-test-data-path "${PDE_ROOT}/datasets/darcy/darcy_pde_test_200.npy" \
   --save-dir "${PDE_ROOT}/outputs/PDE_inverse_sup/darcy" \

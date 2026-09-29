@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 from torchdiffeq import odeint
-from faps_utils.true_gaussian_process import true_GPPrior
-from faps_utils.util import make_grid, reshape_for_batchwise, plot_loss_curve, plot_samples
+from flaps_utils.true_gaussian_process import true_GPPrior
+from flaps_utils.util import make_grid, reshape_for_batchwise, plot_loss_curve, plot_samples
 #
 import time
 

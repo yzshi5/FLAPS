@@ -7,7 +7,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${PDE_ROOT}/pde_train/OFM_prior_2D.py" \
   --pde "ns" \
   --data-path "${PDE_ROOT}/datasets/ns/ns_nonbounded_flow.npy" \
-  --save-dir "${PDE_ROOT}/checkpoints/FAPS_prior/FNO" \
+  --save-dir "${PDE_ROOT}/checkpoints/FLAPS_prior/FNO" \
   --checkpoint-name "ns_fno_prior_100.pt" \
   --figure-dir "${PDE_ROOT}/outputs/OFM/ns_input_prior_full" \
   --device "cuda:0" \

@@ -20,9 +20,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from faps_utils.fno import FNO
-from faps_utils.fno_solver import FNOSolver
-from faps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.fno import FNO
+from flaps_utils.fno_solver import FNOSolver
+from flaps_utils.ofm_ind_likelihood import OFMModel
 
 Tensor = torch.Tensor
 
@@ -77,15 +77,15 @@ class EvalConfig:
 
 
 @dataclass
-class FAPSSamples:
+class FLAPSSamples:
     samples: Tensor
     mean: Tensor
     std: Tensor
     trajectory: Optional[List[Tuple[float, Tensor]]] = None
 
 
-class OFMSurrogateFAPSSampler:
-    """FAPS sampler with nonlinear likelihood through pretrained surrogate."""
+class OFMSurrogateFLAPSSampler:
+    """FLAPS sampler with nonlinear likelihood through pretrained surrogate."""
 
     def __init__(
         self,
@@ -307,7 +307,7 @@ class OFMSurrogateFAPSSampler:
         ode_method: str = "euler",
         return_path: bool = False,
         record_every: int = 4,
-    ) -> FAPSSamples:
+    ) -> FLAPSSamples:
         t_schedule = torch.linspace(0.0, 1.0, annealing_steps + 1, device=self.device, dtype=self.dtype)
         u_t = self.bridge_std(t=0.0) * self._sample_base_gp(n_samples)
         trajectory: Optional[List[Tuple[float, Tensor]]] = [] if return_path else None
@@ -341,7 +341,7 @@ class OFMSurrogateFAPSSampler:
 
         assert u_clean is not None
         samples = u_clean.clone().detach().cpu()
-        return FAPSSamples(
+        return FLAPSSamples(
             samples=samples,
             mean=samples.mean(dim=0),
             std=samples.std(dim=0),
@@ -528,7 +528,7 @@ def create_random_observation(
     return pos_mask, y_obs_part
 
 
-def run_surrogate_regression_FAPS(
+def run_surrogate_regression_FLAPS(
     G: OFMModel,
     forward_model: torch.nn.Module,
     dims: Sequence[int],
@@ -548,8 +548,8 @@ def run_surrogate_regression_FAPS(
     grad_clip_norm: Optional[float],
     state_clamp: Optional[float],
     device: str,
-) -> FAPSSamples:
-    sampler = OFMSurrogateFAPSSampler(
+) -> FLAPSSamples:
+    sampler = OFMSurrogateFLAPSSampler(
         G=G,
         forward_model=forward_model,
         dims=dims,
@@ -576,7 +576,7 @@ def run_surrogate_regression_FAPS(
 
 
 def visualize_results(
-    posterior: FAPSSamples,
+    posterior: FLAPSSamples,
     x_true_full: Tensor,
     y_true_full: Tensor,
     y_obs_part: Tensor,
@@ -790,7 +790,7 @@ def main() -> None:
         device=cfg.device,
     )
     t0 = time.perf_counter()
-    posterior = run_surrogate_regression_FAPS(
+    posterior = run_surrogate_regression_FLAPS(
         G=prior,
         forward_model=forward_model,
         dims=cfg.dims,

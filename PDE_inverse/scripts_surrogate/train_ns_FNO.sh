@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_train/train_PDE_surrogate_2D.py" \
   --pde "ns" \
-  --data-path "/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse_npy/ns_nonbounded_flow.npy" \
+  --data-path "/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse_npy/ns_nonbounded_flow.npy" \
   --save-dir "${PDE_ROOT}/checkpoints/PDE_surrogate" \
   --checkpoint-name "ns_forward.pt" \
   --history-name "ns_history.npy" \

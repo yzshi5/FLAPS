@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_train/train_PDE_surrogate_2D.py" \
   --pde "poisson" \
-  --data-path "/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse_npy/poisson_flow.npy" \
+  --data-path "/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse_npy/poisson_flow.npy" \
   --save-dir "${PDE_ROOT}/checkpoints/PDE_surrogate" \
   --checkpoint-name "poisson_forward.pt" \
   --history-name "poisson_history.npy" \

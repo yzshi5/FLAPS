@@ -33,9 +33,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from faps_utils.fno_solver import FNOSolver
-from faps_utils.ofm_white_velocity_pred import OFMModel
-from faps_utils.unet_ofm import UNet_cond
+from flaps_utils.fno_solver import FNOSolver
+from flaps_utils.ofm_white_velocity_pred import OFMModel
+from flaps_utils.unet_ofm import UNet_cond
 
 Tensor = torch.Tensor
 
@@ -72,9 +72,9 @@ DEFAULT_START_IDX = 0
 DEFAULT_DATA_RANGE = 5.0
 
 METRIC_NAMES = ["CRPS", "SSR", "PSNR", "SSIM", "Relative_L2"]
-OAK_PRIOR_ROOT = Path("/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse/prior_training_outputs")
-OAK_FORWARD_ROOT = Path("/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse/forward_op_training_outputs")
-OAK_DATA_ROOT = Path("/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse_npy")
+OAK_PRIOR_ROOT = Path("/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse/prior_training_outputs")
+OAK_FORWARD_ROOT = Path("/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse/forward_op_training_outputs")
+OAK_DATA_ROOT = Path("/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse_npy")
 PDE_INVERSE_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -98,7 +98,7 @@ class PDEConfig:
 
     @property
     def prior_fallback_dir(self) -> Path:
-        return PDE_INVERSE_ROOT / "checkpoints" / "FAPS_prior" / "UNet"
+        return PDE_INVERSE_ROOT / "checkpoints" / "FLAPS_prior" / "UNet"
 
     @property
     def local_prior_path(self) -> Path:
@@ -184,7 +184,7 @@ class DAPSSamples:
 
 
 def _load_metrics_module():
-    metrics_path = PROJECT_ROOT / "faps_utils" / "2D_metrics.py"
+    metrics_path = PROJECT_ROOT / "flaps_utils" / "2D_metrics.py"
     spec = importlib.util.spec_from_file_location("metrics_2d", metrics_path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Could not load metrics module from {metrics_path}")

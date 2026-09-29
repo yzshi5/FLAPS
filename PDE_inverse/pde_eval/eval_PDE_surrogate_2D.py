@@ -21,7 +21,7 @@ for root in (REPO_ROOT, PDE_INVERSE_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-from faps_utils.fno_solver import FNOSolver
+from flaps_utils.fno_solver import FNOSolver
 
 
 @dataclass(frozen=True)

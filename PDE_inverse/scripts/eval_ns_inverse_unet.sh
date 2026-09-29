@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_eval/PDE_inverse_unet.py" \
   --pde "ns" \
-  --prior-path "${PDE_ROOT}/checkpoints/FAPS_prior/UNet/ns_unet_prior_100.pt" \
+  --prior-path "${PDE_ROOT}/checkpoints/FLAPS_prior/UNet/ns_unet_prior_100.pt" \
   --forward-ckpt "${PDE_ROOT}/checkpoints/PDE_surrogate/ns_forward.pt" \
   --test-data-path "${PDE_ROOT}/datasets/ns/ns_pde_test_200.npy" \
   --save-dir "${PDE_ROOT}/outputs/PDE_inverse_unet/ns" \

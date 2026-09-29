@@ -6,7 +6,7 @@ REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${REGRESSION_ROOT}/reg_train/OFM_MINO_prior_weather.py" \
   --data-path "/net/ghisallo/scratch1/yshi5/OFM/dataset/weather/train_climate.npy" \
-  --save-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --save-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --checkpoint-name "weather_epoch_200.pt" \
   --figure-dir "${REGRESSION_ROOT}/outputs/OFM/weather" \
   --device "cuda:0" \

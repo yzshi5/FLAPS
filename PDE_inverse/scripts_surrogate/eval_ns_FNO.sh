@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_eval/eval_PDE_surrogate_2D.py" \
   --pde "ns" \
-  --test-data-path "/oak-data/yshi5/yshi5/FAPS/OFM/PDE_inverse_npy/ns_nonbounded_flow_test.npy" \
+  --test-data-path "/oak-data/yshi5/yshi5/FLAPS/OFM/PDE_inverse_npy/ns_nonbounded_flow_test.npy" \
   --model-path "${PDE_ROOT}/checkpoints/PDE_surrogate/ns_forward.pt" \
   --fig-dir "${PDE_ROOT}/outputs/PDE_surrogate" \
   --metrics-name "ns_metrics.npy" \

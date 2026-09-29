@@ -1,6 +1,6 @@
 import torch
 from sklearn.gaussian_process.kernels import Kernel, Hyperparameter
-from faps_utils.util import make_grid
+from flaps_utils.util import make_grid
 import numpy as np
 
 ## Load the model 

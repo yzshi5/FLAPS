@@ -21,8 +21,8 @@ for root in (REPO_ROOT, PDE_INVERSE_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
 
 
 @dataclass(frozen=True)
@@ -79,7 +79,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--save-dir",
         type=Path,
-        default=PDE_INVERSE_ROOT / "checkpoints" / "FAPS_prior" / "FNO",
+        default=PDE_INVERSE_ROOT / "checkpoints" / "FLAPS_prior" / "FNO",
     )
     parser.add_argument("--checkpoint-name", type=str, required=True)
     parser.add_argument("--figure-dir", type=Path, required=True)

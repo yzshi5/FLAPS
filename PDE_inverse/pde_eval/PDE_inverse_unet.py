@@ -20,9 +20,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from faps_utils.fno_solver import FNOSolver
-from faps_utils.ofm_white_velocity_pred import OFMModel
-from faps_utils.unet_ofm import UNet_cond
+from flaps_utils.fno_solver import FNOSolver
+from flaps_utils.ofm_white_velocity_pred import OFMModel
+from flaps_utils.unet_ofm import UNet_cond
 
 Tensor = torch.Tensor
 PDE_INVERSE_ROOT = Path(__file__).resolve().parents[1]

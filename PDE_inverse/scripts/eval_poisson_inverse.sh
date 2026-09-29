@@ -6,7 +6,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${PDE_ROOT}/pde_eval/PDE_inverse.py" \
   --pde "poisson" \
-  --prior-path "${PDE_ROOT}/checkpoints/FAPS_prior/FNO/poisson_fno_prior_100.pt" \
+  --prior-path "${PDE_ROOT}/checkpoints/FLAPS_prior/FNO/poisson_fno_prior_100.pt" \
   --forward-ckpt "${PDE_ROOT}/checkpoints/PDE_surrogate/poisson_forward.pt" \
   --test-data-path "${PDE_ROOT}/datasets/poisson/poisson_pde_test_200.npy" \
   --save-dir "${PDE_ROOT}/outputs/PDE_inverse/poisson" \

@@ -19,9 +19,9 @@ for root in (REPO_ROOT, REGRESSION_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
-from faps_utils.true_gaussian_process import true_GPPrior
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.true_gaussian_process import true_GPPrior
 
 
 @dataclass(frozen=True)

@@ -23,15 +23,15 @@ for root in (REPO_ROOT, REGRESSION_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-import faps_utils as _faps_utils
+import flaps_utils as _flaps_utils
 
-sys.modules.setdefault("ofm_utils", _faps_utils)
+sys.modules.setdefault("ofm_utils", _flaps_utils)
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
 
 # Load 2D posterior metrics module (filename starts with a digit).
-_metrics2d_path = REPO_ROOT / "faps_utils" / "2D_metrics.py"
+_metrics2d_path = REPO_ROOT / "flaps_utils" / "2D_metrics.py"
 _metrics2d_spec = importlib.util.spec_from_file_location("metrics_2d", _metrics2d_path)
 if _metrics2d_spec is None or _metrics2d_spec.loader is None:
     raise ImportError(f"Could not load 2D metrics module from: {_metrics2d_path}")
@@ -48,7 +48,7 @@ DATASET_DEFAULTS = {
     "ns": {
         "label": "NS",
         "test_data_path": NS_TEST_DATA_PATH,
-        "model_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "model_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": "ns_epoch_300.pt",
         "results_dir": REGRESSION_ROOT / "outputs" / "Regression_results" / "NS_reg",
         "device": "cuda:2" if torch.cuda.is_available() else "cpu",
@@ -62,7 +62,7 @@ DATASET_DEFAULTS = {
     "bh": {
         "label": "BH",
         "test_data_path": BH_TEST_DATA_PATH,
-        "model_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "model_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": "bh_epoch_300.pt",
         "results_dir": REGRESSION_ROOT / "outputs" / "Regression_results" / "BH_reg",
         "device": "cuda:0" if torch.cuda.is_available() else "cpu",
@@ -76,7 +76,7 @@ DATASET_DEFAULTS = {
     "custom": {
         "label": "2D",
         "test_data_path": None,
-        "model_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "model_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": None,
         "results_dir": REGRESSION_ROOT / "outputs" / "Regression_results" / "2D_reg",
         "device": "cuda:0" if torch.cuda.is_available() else "cpu",
@@ -138,15 +138,15 @@ class EvalConfig:
 
 
 @dataclass
-class FAPSSamples:
+class FLAPSSamples:
     samples: Tensor
     mean: Tensor
     std: Tensor
     trajectory: Optional[List[Tuple[float, Tensor]]] = None
 
 
-class OFMMaskedFAPSSampler:
-    """FAPS-style posterior sampler for masking-based regression."""
+class OFMMaskedFLAPSSampler:
+    """FLAPS-style posterior sampler for masking-based regression."""
 
     def __init__(
         self,
@@ -366,7 +366,7 @@ class OFMMaskedFAPSSampler:
         return_path: bool = False,
         record_every: int = 4,
         init: Optional[Tensor] = None,
-    ) -> FAPSSamples:
+    ) -> FLAPSSamples:
         t_schedule = torch.linspace(0.0, 1.0, annealing_steps + 1, device=self.device, dtype=self.dtype)
 
         if init is None:
@@ -419,7 +419,7 @@ class OFMMaskedFAPSSampler:
         samples = u_clean.clone().detach().cpu()
         mean = samples.mean(dim=0)
         std = samples.std(dim=0)
-        return FAPSSamples(samples=samples, mean=mean, std=std, trajectory=trajectory)
+        return FLAPSSamples(samples=samples, mean=mean, std=std, trajectory=trajectory)
 
 
 def parse_args() -> argparse.Namespace:
@@ -427,7 +427,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset", choices=DATASET_DEFAULTS.keys(), default="ns")
     parser.add_argument("--checkpoint", type=Path, default=None, help="Optional direct path to a checkpoint.")
     parser.add_argument("--model-dir", type=Path, default=None)
-    parser.add_argument("--flat-checkpoint-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FAPS_prior")
+    parser.add_argument("--flat-checkpoint-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FLAPS_prior")
     parser.add_argument("--checkpoint-name", type=str, default=None)
     parser.add_argument("--test-data-path", type=Path, default=None)
     parser.add_argument("--test-sample-idx", type=int, default=None)
@@ -612,7 +612,7 @@ def create_random_observation(
     return pos_mask, u_obs_part
 
 
-def run_masked_regression_FAPS(
+def run_masked_regression_FLAPS(
     G: OFMModel,
     dims: Sequence[int],
     pos_mask: Tensor,
@@ -631,8 +631,8 @@ def run_masked_regression_FAPS(
     grad_clip_norm: Optional[float],
     state_clamp: Optional[float],
     device: str,
-) -> FAPSSamples:
-    sampler = OFMMaskedFAPSSampler(
+) -> FLAPSSamples:
+    sampler = OFMMaskedFLAPSSampler(
         G=G,
         dims=dims,
         pos_mask=pos_mask,
@@ -658,7 +658,7 @@ def run_masked_regression_FAPS(
 
 
 def visualize_results(
-    posterior: FAPSSamples,
+    posterior: FLAPSSamples,
     u_obs_full: Tensor,
     u_obs_part: Tensor,
     pos_mask: Tensor,
@@ -860,7 +860,7 @@ def main() -> None:
     )
     
     t0 = time.perf_counter()
-    posterior = run_masked_regression_FAPS(
+    posterior = run_masked_regression_FLAPS(
         G=fmot,
         dims=cfg.dims,
         pos_mask=pos_mask,

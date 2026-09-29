@@ -21,9 +21,9 @@ for root in (REPO_ROOT, REGRESSION_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
-from faps_utils.true_gaussian_process import true_GPPrior
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.true_gaussian_process import true_GPPrior
 
 # for GP regression validation
 from sklearn.gaussian_process.kernels import Matern
@@ -75,10 +75,10 @@ class EvalConfig:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Evaluate OFM-FAPS masked regression with a GP Matern prior.")
+    parser = argparse.ArgumentParser(description="Evaluate OFM-FLAPS masked regression with a GP Matern prior.")
     parser.add_argument("--checkpoint", type=Path, default=None, help="Optional direct path to a checkpoint.")
-    parser.add_argument("--model-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FAPS_prior")
-    parser.add_argument("--flat-checkpoint-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FAPS_prior")
+    parser.add_argument("--model-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FLAPS_prior")
+    parser.add_argument("--flat-checkpoint-dir", type=Path, default=REGRESSION_ROOT / "checkpoints" / "FLAPS_prior")
     parser.add_argument("--results-dir", type=Path, default=REGRESSION_ROOT / "outputs" / "Regression_results" / "GP_matern_reg")
     parser.add_argument("--device", type=str, default="cuda:5" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--seed", type=int, default=100)
@@ -290,16 +290,16 @@ def build_shared_regression_case(
 
 
 @dataclass
-class FAPSSamples:
+class FLAPSSamples:
     samples: Tensor
     mean: Tensor
     std: Tensor
     trajectory: Optional[List[Tuple[float, Tensor]]] = None
 
 
-class OFMMaskedFAPSSampler:
+class OFMMaskedFLAPSSampler:
     """
-    FAPS-style posterior sampler for functional regression with a masking operator.
+    FLAPS-style posterior sampler for functional regression with a masking operator.
 
     This class is designed to work with the `OFMModel` API used in SPL_OFM:
       - `G.model(t, x)` is the learned velocity field
@@ -604,7 +604,7 @@ class OFMMaskedFAPSSampler:
         return_path: bool = False,
         record_every: int = 4,
         init: Optional[Tensor] = None,
-    ) -> FAPSSamples:
+    ) -> FLAPSSamples:
         """
         Draw posterior samples for masked functional regression.
 
@@ -613,7 +613,7 @@ class OFMMaskedFAPSSampler:
         n_samples:
             Number of posterior samples to generate in parallel.
         annealing_steps:
-            Number of outer FAPS levels in t-space from 0 -> 1.
+            Number of outer FLAPS levels in t-space from 0 -> 1.
         ode_steps:
             Number of solver evaluations used when computing the endpoint anchor.
         langevin_steps:
@@ -651,7 +651,7 @@ class OFMMaskedFAPSSampler:
                 rtol=rtol,
                 atol=atol,
             )
-            # Step 2: FAPS correction in function space.
+            # Step 2: FLAPS correction in function space.
             u_clean = u_hat.clone()
             bridge_var_t = self.bridge_var(t_cur)
             lam2 = self.anchor_std(t_cur) ** 2
@@ -674,10 +674,10 @@ class OFMMaskedFAPSSampler:
         samples = u_clean.clone().detach().cpu()
         mean = samples.mean(dim=0)
         std = samples.std(dim=0)
-        return FAPSSamples(samples=samples, mean=mean, std=std, trajectory=trajectory)
+        return FLAPSSamples(samples=samples, mean=mean, std=std, trajectory=trajectory)
 
 
-def run_masked_regression_FAPS(
+def run_masked_regression_FLAPS(
     G,
     dims: Sequence[int],
     pos_mask: Tensor,
@@ -698,9 +698,9 @@ def run_masked_regression_FAPS(
     low_rank_cov_samples: int = 256,
     low_rank_cov_ode_steps: int = 24,
     device: Optional[str] = None,
-) -> FAPSSamples:
+) -> FLAPSSamples:
     """Convenience wrapper matching the regression notebook's variable names."""
-    sampler = OFMMaskedFAPSSampler(
+    sampler = OFMMaskedFLAPSSampler(
         G=G,
         dims=dims,
         pos_mask=pos_mask,
@@ -766,7 +766,7 @@ def ground_truth_gp_posterior_reference(
 
 
 def visualize_masked_regression(
-    posterior: FAPSSamples,
+    posterior: FLAPSSamples,
     u_obs_full: Tensor,
     u_obs_part: Tensor,
     pos_mask: Tensor,
@@ -871,7 +871,7 @@ def visualize_masked_regression(
         ax.grid(alpha=0.22)
         _save_figure(fig, "masked_regression_posterior")
 
-        # Figure 2: compare OFM-FAPS and true GP posterior distributions.
+        # Figure 2: compare OFM-FLAPS and true GP posterior distributions.
         post_acovf = _mean_acovf(samples_np, nlag=nlag)
         gp_acovf = _mean_acovf(gp_samples, nlag=nlag)
 
@@ -881,14 +881,14 @@ def visualize_masked_regression(
         center_gp = 0.5 * (edges_gp[1:] + edges_gp[:-1])
 
         fig, ax = plt.subplots(1, 2, figsize=(10, 3.8))
-        ax[0].plot(post_acovf, color="#4C72B0", linewidth=2.4, label="OFM-FAPS posterior")
+        ax[0].plot(post_acovf, color="#4C72B0", linewidth=2.4, label="OFM-FLAPS posterior")
         ax[0].plot(gp_acovf, color="#55A868", linestyle="--", linewidth=2.4, label="True GP posterior")
         ax[0].set_title("Autocovariance")
         ax[0].set_xlabel("Lag")
         ax[0].legend(loc="upper right", frameon=False)
         ax[0].grid(alpha=0.22)
 
-        ax[1].plot(center_post, hist_post, color="#4C72B0", linewidth=2.4, label="OFM-FAPS posterior")
+        ax[1].plot(center_post, hist_post, color="#4C72B0", linewidth=2.4, label="OFM-FLAPS posterior")
         ax[1].plot(center_gp, hist_gp, color="#55A868", linestyle="--", linewidth=2.4, label="True GP posterior")
         ax[1].set_title("Value Histogram")
         ax[1].set_xlabel("Value")
@@ -899,7 +899,7 @@ def visualize_masked_regression(
 
         # Figure 3: posterior std and mask locations.
         fig, ax = plt.subplots(1, 1, figsize=(10, 3.2))
-        ax.plot(x_axis, post_std, color="#DD8452", linewidth=2.6, label="OFM-FAPS std")
+        ax.plot(x_axis, post_std, color="#DD8452", linewidth=2.6, label="OFM-FLAPS std")
         ax.plot(x_axis, gp_std, color="#55A868", linestyle="--", linewidth=2.2, label="True GP posterior std")
         ax.scatter(
             obs_idx,
@@ -943,7 +943,7 @@ def main() -> None:
     u_obs_full = u_obs_full.squeeze()
 
     ts = time.perf_counter()
-    posterior = run_masked_regression_FAPS(
+    posterior = run_masked_regression_FLAPS(
         G=fmot,
         dims=cfg.dims,
         pos_mask=pos_mask,

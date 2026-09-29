@@ -7,7 +7,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${PDE_ROOT}/pde_train/unet_prior_2D.py" \
   --pde "poisson" \
   --data-path "${PDE_ROOT}/datasets/poisson/poisson_flow.npy" \
-  --save-dir "${PDE_ROOT}/checkpoints/FAPS_prior/UNet" \
+  --save-dir "${PDE_ROOT}/checkpoints/FLAPS_prior/UNet" \
   --checkpoint-name "poisson_unet_prior_100.pt" \
   --figure-dir "${PDE_ROOT}/outputs/OFM_UNet/poisson_input_prior" \
   --device "cuda:0" \

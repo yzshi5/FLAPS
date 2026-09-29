@@ -1,5 +1,5 @@
 
-# Flow Annealing Posterior Sampling for Function-Space Regression and Inverse Problems 
+# Flow Annealing Posterior Sampling for Function-Space Regression and Inverse Problems
 ### [FLAPS Paper](https://arxiv.org/abs/2606.22346) [NeurIPS 2026]
 
 By Yaozhong Shi, Zachary E. Ross and Yisong Yue
@@ -7,10 +7,10 @@ By Yaozhong Shi, Zachary E. Ross and Yisong Yue
 ## Method Overview
 ![image](figs/overview.png)
 
-## Stochastic-Process Regression 
+## Stochastic-Process Regression
 ![image](figs/Regression.png)
 
-## PDE Inverse 
+## PDE Inverse
 ![image](figs/PDEinv.png)
 
 
@@ -32,7 +32,7 @@ conda activate flaps
 
 Some MINO/weather experiments also require the MINO model utilities included in this repo.
 
-## Datasets and Checkpoints 
+## Datasets and Checkpoints
 
 
 Checkpoints and small prepared datasets are stored on Hugging Face
@@ -70,7 +70,7 @@ snapshot_download(
 )
 PY
 ```
-You can also manually download the entire huggingface repo if you want. 
+You can also manually download the entire huggingface repo if you want.
 
 For the original PDE train/test data, you can also use:
 
@@ -99,39 +99,39 @@ To download test files only:
 python datasets/download_dataset.py all --test --output-dir datasets/PDE_inverse
 ```
 
-The functional regression dataest is based on https://github.com/yzshi5/MINO
+The functional regression dataset is based on https://github.com/yzshi5/MINO
 
 The PDE inverse datasets are provided by : https://github.com/jhhuangchloe/DiffusionPDE and https://github.com/neuraloperator/FunDPS
 
-## Quick Test 
+## Quick Test
 
-To reproduce the results of GP regression, first download the checkpoint for the prior ``Regression/checkpoints/FLAPS_prior/GP_matern_epoch_500.p`` 
+To reproduce the results of GP regression, first download the checkpoint for the prior ``Regression/checkpoints/FLAPS_prior/GP_matern_epoch_500.pt``
 
-place it under ``Regression`` folder, then run : 
+place it under ``Regression`` folder, then run :
 
 ```bash
 cd Regression
 bash scripts/eval_GP_matern_reg.sh
 ```
 
-To reproduce the results of Darcy Flow PDE inverse with FNO prior (used for OFM), first download checkpoints for prior and PDE surrogate 
+To reproduce the results of Darcy Flow PDE inverse with FNO prior (used for OFM), first download checkpoints for prior and PDE surrogate
 
-``PDE_inverse/checkpoints/FLAPS_prior/FNO/darcy_fno_prior_100.pt`` 
+``PDE_inverse/checkpoints/FLAPS_prior/FNO/darcy_fno_prior_100.pt``
 
-``PDE_inverse/checkpoints/PDE_surrogate/darcy_forward.pt``  
+``PDE_inverse/checkpoints/PDE_surrogate/darcy_forward.pt``
 
-Then download the small prepared test dataset. 
+Then download the small prepared test dataset.
 
-``PDE_inverse/checkpoints/datasets/darcy/darcy_pde_test_200.npy``
+``PDE_inverse/datasets/darcy/darcy_pde_test_200.npy``
 
-Finally run: 
+Finally run:
 
 ```bash
 cd PDE_inverse
 bash scripts/eval_darcy_inverse.sh
 ```
 
-To apply FLAPS for finite-dimensional Flow Matching prior (UNet prior), download the UNet prior and then run 
+To apply FLAPS for finite-dimensional Flow Matching prior (UNet prior), download the UNet prior and then run
 
 ```bash
 cd PDE_inverse
@@ -140,7 +140,7 @@ bash scripts/eval_darcy_inverse_unet.sh
 
 We also provide checkpoints for other PDE inverse problem, repeat the above steps to run on different PDE inverse problem
 
-## Run FLAPS for Functional Regression 
+## Run FLAPS for Functional Regression
 
 To run FLAPS for functional regression, we just need to train a prior. Let's take GP matern case as an example
 
@@ -161,7 +161,7 @@ bash scripts/eval_GP_matern_reg.sh
 ```
 
 
-## Run FLAPS for PDE Inverse 
+## Run FLAPS for PDE Inverse
 
 
 All commands below are run from:
@@ -175,10 +175,10 @@ PDE inverse outputs are written under:
 PDE_inverse/outputs/
 ```
 
-In the following steps, we take Darcy Flow PDE inverse problem as an example. The pipeline is the same for other PDE problem. 
+In the following steps, we take Darcy Flow PDE inverse problem as an example. The pipeline is the same for other PDE problem.
 
 #### 1. Train and evaluate FNO Forward Surrogates
-The first step is to train the FNO forward surrogate, you can also replace FNO with other PDE surrogate, like Transolver, GAOT etc or just a differentiable PDE solver 
+The first step is to train the FNO forward surrogate, you can also replace FNO with other PDE surrogate, like Transolver, GAOT etc or just a differentiable PDE solver
 
 ```bash
 bash scripts_surrogate/train_darcy_FNO.sh
@@ -194,7 +194,7 @@ bash scripts/train_darcy_prior_unet.sh
 ```
 #### 3. Run Inverse Evaluation
 
-Then run single-case evaluation with FNO or UNet prior 
+Then run single-case evaluation with FNO or UNet prior
 
 ```bash
 bash scripts/eval_darcy_inverse.sh
@@ -206,9 +206,9 @@ When use FNO prior, the entire formulation is built on function space, we can do
 ```bash
 bash scripts/eval_darcy_inverse_sup.sh
 ```
-#### 4. Reproduce the reported performance 
+#### 4. Reproduce the reported performance
 
-We need to run FLAPS over entire test datasets, each test dataset in the paper contains 100 test cases. 
+We need to run FLAPS over entire test datasets, each test dataset in the paper contains 100 test cases.
 
 ```bash
 bash scripts_metrics/eval_darcy_inverse_all_test.sh
@@ -217,8 +217,8 @@ bash scripts_metrics/eval_darcy_inverse_all_test_unet.sh
 
 
 
-## Comments 
-- A paradigm shift from Neural Processes, a principled Bayesian framework for general stochastic process regression. 
+## Comments
+- A paradigm shift from Neural Processes, a principled Bayesian framework for general stochastic process regression.
 - FLAPS is a generic posterior sampling algorithm for both function-space and finite-dimensional (standard) flow matching prior. We recommend using U-Net based prior (by default) if the resolution is fixed.
 - With dense observations, you can set rank=0 to inject white noise during Langevin steps. (UNet prior is recommended)
 - When use differential PDE solver as the surrogate, which is sensitive to initialization, FLAPS is much more stable than Diffusion-based posterior sampling method.
@@ -226,10 +226,10 @@ bash scripts_metrics/eval_darcy_inverse_all_test_unet.sh
 ## Notes
 - Check shell scripts before long runs; they set GPU devices, checkpoint names, and dataset paths.
 - Checkpoints and datasets are intentionally ignored by Git and should be downloaded from Hugging Face.
-- FLAPS is robust to a very wide range of hyperparameters, the same configuration can be used for different setting 
+- FLAPS is robust to a very wide range of hyperparameters, the same configuration can be used for different setting
 
 
-## Reference 
+## Reference
 If you find this repository useful for your research, please consider citing our work
 ```bibtex
 @article{shi2026flow,
@@ -238,4 +238,4 @@ If you find this repository useful for your research, please consider citing our
   journal={arXiv preprint arXiv:2606.22346v1},
   year={2026}
 }
-
+```

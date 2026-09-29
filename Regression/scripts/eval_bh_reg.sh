@@ -6,8 +6,8 @@ REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${REGRESSION_ROOT}/reg_eval/2D_reg.py" \
   --dataset "bh" \
-  --model-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
-  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --model-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
+  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --checkpoint-name "bh_epoch_300.pt" \
   --results-dir "${REGRESSION_ROOT}/outputs/Regression_results/BH_reg" \
   --device "cuda:0" \

@@ -7,7 +7,7 @@ PDE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${PDE_ROOT}/pde_train/unet_prior_2D.py" \
   --pde "helmholtz" \
   --data-path "${PDE_ROOT}/datasets/helmholtz/helmholtz_flow.npy" \
-  --save-dir "${PDE_ROOT}/checkpoints/FAPS_prior/UNet" \
+  --save-dir "${PDE_ROOT}/checkpoints/FLAPS_prior/UNet" \
   --checkpoint-name "helmholtz_unet_prior_100.pt" \
   --figure-dir "${PDE_ROOT}/outputs/OFM_UNet/helmholtz_input_prior" \
   --device "cuda:0" \

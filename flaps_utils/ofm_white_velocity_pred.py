@@ -11,8 +11,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from faps_utils.util import make_grid, reshape_for_batchwise, plot_loss_curve, plot_samples
-# independent coupling 
+from flaps_utils.util import make_grid, reshape_for_batchwise, plot_loss_curve, plot_samples
+# independent coupling
 #from torchcfm.optimal_transport import OTPlanSampler
 
 
@@ -24,7 +24,7 @@ class WhiteNoiseGenerator:
     White noise generator - samples from standard normal distribution.
     Replaces Gaussian Process prior with simple white noise.
     """
-    
+
     def __init__(self, alpha=None, device='cpu', dims=None, scale=None):
         """
         Args:
@@ -35,30 +35,30 @@ class WhiteNoiseGenerator:
         """
         self.device = device
         self.dims = dims if dims is not None else []
-    
+
     def sample_from_prior(self, n_samples=1, n_channels=1):
         """
         Sample white noise from standard normal distribution.
-        
+
         Args:
             n_samples: number of samples
             n_channels: number of channels
-            
+
         Returns:
             Tensor of shape [n_samples, n_channels, *dims] with white noise
         """
         shape = [n_samples, n_channels] + list(self.dims)
         return torch.randn(*shape, device=self.device)
-    
+
     def sample(self, dims, n_samples=1, n_channels=1):
         """
         Sample white noise with specified dimensions.
-        
+
         Args:
             dims: spatial dimensions [n_x, n_y, n_t]
             n_samples: number of samples
             n_channels: number of channels
-            
+
         Returns:
             Tensor of shape [n_samples, n_channels, *dims] with white noise
         """
@@ -93,7 +93,7 @@ class OFMModel:
         self.sample_dtype = sample_dtype
 
     def sample_t(self, n: int, device=None):
-        """ 
+        """
         Sample diffusion times using a logistic-normal distribution such that
         logit(t) ~ N(mu, sigma^2). Defaults to mu=-0.8, sigma=0.8.
         """
@@ -103,46 +103,46 @@ class OFMModel:
         """
         z = torch.randn(n, device=device) * self.t_sigma + self.t_mu
         return torch.sigmoid(z)
-        """    
+        """
         return torch.rand(n, device=device)
 
 
     def sample_gp_noise(self, x_data, x_conds):
-        # sample GP noise with OT 
-        
+        # sample GP noise with OT
+
         batch_size = x_data.shape[0]
         n_channels = x_data.shape[1]
         dims = x_data.shape[2:]
-        
+
         # GP noise : [batch_size, n_channels, *dims]
-        #x_0 = self.gp.sample_from_prior(query_points, dims, n_samples=batch_size, n_channels=n_channels) 
-        x_0 = self.gp.sample_from_prior(n_samples=batch_size, n_channels=n_channels) 
-        
+        #x_0 = self.gp.sample_from_prior(query_points, dims, n_samples=batch_size, n_channels=n_channels)
+        x_0 = self.gp.sample_from_prior(n_samples=batch_size, n_channels=n_channels)
+
         #x_0, x_data, _, x_conds = self.ot_sampler.sample_plan_with_labels(x_0, x_data, y1=x_conds)
-        
+
         return x_0, x_data, x_conds
-        
+
     def simulate(self, t, x_0, x_data):
         # t: [batch_size,]
         # x_data: [batch_size, n_channels, *dims]
         # samples from p_t(x | x_data)
-        
+
         batch_size = x_data.shape[0]
         n_channels = x_data.shape[1]
 
         # Sample from prior GP
-        # we should define a second Gaussian kernel for the GP noise, here, we set it the same as p_0(x) 
+        # we should define a second Gaussian kernel for the GP noise, here, we set it the same as p_0(x)
         #query_points = make_grid(dims)
         #noise = self.gp.sample(query_points, dims, n_samples=batch_size, n_channels=n_channels) # GP noise : [batch_size, n_channels, *dims]
         noise = self.gp.sample_from_prior(n_samples=batch_size, n_channels=n_channels)
 
-        
+
         mu = t * x_data + (1 - t) * x_0
         samples = mu + self.sigma_min * noise
 
         assert samples.shape == x_data.shape
         return samples
-    
+
     def get_conditional_fields(self, x0, x1, t):
         # computes v_t(x_noisy | x_data)
         # x_data, x_noisy: (batch_size, n_channels, *dims)
@@ -183,10 +183,10 @@ class OFMModel:
                     self.n_channels = batch.shape[1]
                     self.train_dims = batch.shape[2:]
                     first = False
-                    
+
                 # GP noise with OT reorder
                 x_0, x_data, conds = self.sample_gp_noise(batch, init_conds)
-        
+
                 # t ~ logistic-normal in (0, 1)
                 t = self.sample_t(batch_size, device=device)
                 t = reshape_for_batchwise(t, len(x_0.shape[1:]))
@@ -197,17 +197,17 @@ class OFMModel:
                 target = self.get_conditional_fields(x_0, x_data, t)
 
                 x_t = x_t.to(device)
-                target = target.to(device) # v loss        
+                target = target.to(device) # v loss
 
                 # Get model output
                 #print('t before the model :{}'.format(t))
                 # conds shape : [batch_size, n_conds]
                 model_out_v = model(t.squeeze(), x_t, conds)  # direct velocity prediction
-                
+
 
                 # Evaluate loss and do gradient step
                 optimizer.zero_grad()
-                loss = torch.mean((model_out_v - target)**2 ) 
+                loss = torch.mean((model_out_v - target)**2 )
                 loss.backward()
                 optimizer.step()
 
@@ -278,7 +278,7 @@ class OFMModel:
             t_next = time_steps[i+1]
             x_t = stepper(x_t, t, t_next, conds)
 
-        # last step euler 
+        # last step euler
         x_t = self._euler_step(x_t, time_steps[-2], time_steps[-1], conds)
 
         return x_t
@@ -359,7 +359,7 @@ class OFMModel:
     def _euler_step(self, x_t, t, t_next, conds):
         v_pred = self._forward_sample(x_t, t, conds)
         x_next = x_t + (t_next - t) * v_pred
-        return x_next 
+        return x_next
 
 
     @torch.no_grad()
@@ -369,13 +369,13 @@ class OFMModel:
         v_pred_t_next = self._forward_sample(x_next_euler, t_next, conds)
         v_pred = 0.5 * (v_pred_t + v_pred_t_next)
         x_next = x_t + (t_next - t) * v_pred
-        return x_next 
+        return x_next
 
 
 
-#### For evaluatoin ###         
+#### For evaluatoin ###
 """
-from faps_utils.unet_ofm import UNet_cond    
+from flaps_utils.unet_ofm import UNet_cond
 def _default_device():
     return "cuda:1" if torch.cuda.is_available() else "cpu"
 
@@ -434,7 +434,7 @@ def _build_model(args, device):
 def main():
     parser = _build_arg_parser()
     args = parser.parse_args()
-    
+
     # print the configuration
     print(args)
 

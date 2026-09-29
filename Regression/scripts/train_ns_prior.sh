@@ -7,7 +7,7 @@ REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 python "${REGRESSION_ROOT}/reg_train/OFM_prior_2D.py" \
   --dataset "ns" \
   --data-path "/net/ghisallo/scratch1/yshi5/OFM/dataset/N_S/ns_30000.npy" \
-  --save-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --save-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --checkpoint-name "ns_epoch_300.pt" \
   --figure-dir "${REGRESSION_ROOT}/outputs/OFM/NS" \
   --device "cuda:0" \

@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REGRESSION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 python "${REGRESSION_ROOT}/reg_eval/MINO_weather_reg.py" \
-  --model-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
-  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FAPS_prior" \
+  --model-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
+  --flat-checkpoint-dir "${REGRESSION_ROOT}/checkpoints/FLAPS_prior" \
   --save-dir "${REGRESSION_ROOT}/outputs/Regression_results/weather_reg" \
   --device "cuda:0" \
   --seed 22 \

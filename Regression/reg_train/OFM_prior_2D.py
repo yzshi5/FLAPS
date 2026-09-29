@@ -21,12 +21,12 @@ for root in (REPO_ROOT, REGRESSION_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
 
-import faps_utils as _faps_utils
+import flaps_utils as _flaps_utils
 
-sys.modules.setdefault("ofm_utils", _faps_utils)
+sys.modules.setdefault("ofm_utils", _flaps_utils)
 
-from faps_utils.fno import FNO
-from faps_utils.ofm_ind_likelihood import OFMModel
+from flaps_utils.fno import FNO
+from flaps_utils.ofm_ind_likelihood import OFMModel
 
 NS_DATA_PATH = "/net/ghisallo/scratch1/yshi5/OFM/dataset/N_S/ns_30000.npy"
 BH_DATA_PATH = "/net/wintermute/scratch/agao3/OpFlow/Unoflow/m_1_1_40_all.npy"
@@ -35,7 +35,7 @@ DATASET_DEFAULTS = {
     "ns": {
         "label": "NS",
         "data_path": NS_DATA_PATH,
-        "save_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "save_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": "ns_epoch_300.pt",
         "figure_dir": REGRESSION_ROOT / "outputs" / "OFM" / "NS",
         "train_samples": 30_000,
@@ -47,7 +47,7 @@ DATASET_DEFAULTS = {
     "bh": {
         "label": "BH",
         "data_path": BH_DATA_PATH,
-        "save_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "save_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": "bh_epoch_300.pt",
         "figure_dir": REGRESSION_ROOT / "outputs" / "OFM" / "BH",
         "train_samples": None,
@@ -59,7 +59,7 @@ DATASET_DEFAULTS = {
     "custom": {
         "label": "2D",
         "data_path": None,
-        "save_dir": REGRESSION_ROOT / "checkpoints" / "FAPS_prior",
+        "save_dir": REGRESSION_ROOT / "checkpoints" / "FLAPS_prior",
         "checkpoint_name": None,
         "figure_dir": REGRESSION_ROOT / "outputs" / "OFM" / "2D",
         "train_samples": None,

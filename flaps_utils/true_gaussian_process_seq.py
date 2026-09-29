@@ -1,13 +1,13 @@
 import torch
 from sklearn.gaussian_process.kernels import Matern
-from faps_utils.util import make_grid
+from flaps_utils.util import make_grid
 import numpy as np
 
-## Load the model 
+# Gaussian Process sequence. 
 
 def matern_kernel_cov(grids, length_scale, nu):
     """
-    grids : [n_points, 1 or 2]
+    grids : [n_points, 1 or 2 or 3]
     """
     kernel = 1.0 * Matern(length_scale=length_scale, length_scale_bounds="fixed", nu=nu)
     return kernel(grids)
@@ -40,27 +40,45 @@ class true_GPPrior(torch.distributions.distribution.Distribution):
     """ Wrapper around some torch utilities that makes prior sampling easy.
     """
 
-    def __init__(self, kernel=None, mean=None, lengthscale=None, var=None, nu=0.5, device='cpu', dims=None):
+    def __init__(
+        self,
+        kernel=None,
+        mean=None,
+        lengthscale=None,
+        var=None,
+        nu=0.5,
+        device='cpu',
+        dims=None,
+        n_pos=None,
+    ):
         """
-        kernel/mean/lengthscale/var: parameters of kernel
-        you should choose right parameter to avoid numerical instability of the cov matrix
+        n_pos : [n_points, x_dim] 
         """
         assert var == 1, 'variance is not 1' 
         
-        ## kernel shape: [N, N], mean shape :[N]
-        # dims should be 1D [n_x] or 2D [n_x, n_x]
-        n_points = np.prod(dims)
-        grids = make_grid(dims)
+        jitter = 1e-6
+        if n_pos is None:
+            if dims is None:
+                raise ValueError("Either dims or n_pos must be provided for GP prior.")
+            n_pos = make_grid(dims)
+        if isinstance(n_pos, np.ndarray):
+            n_pos_t = torch.from_numpy(n_pos).float()
+        else:
+            n_pos_t = n_pos.detach().clone().float()
+        n_points = len(n_pos_t)
+        grids = n_pos_t.cpu().numpy()
         matern_ker = matern_kernel_cov(grids, lengthscale, nu)
         
         self.lengthscale = lengthscale
         self.nu = nu
-        self.dims = dims
+        self.n_pos = n_pos_t
+        self.dims = list(dims) if dims is not None else None
         
         base_mu = torch.zeros(n_points).float()
-        # add a small base jitter; helper can increase if needed
-        base_cov = torch.tensor(matern_ker).float() + 1e-6 * torch.eye(matern_ker.shape[0])
+        #add jitter 
+        base_cov = torch.tensor(matern_ker).float() + jitter * torch.eye(matern_ker.shape[0])
         base_cov = base_cov.to(torch.float64) #can help improve numerical stability
+        
         # be careful of numerical instability when calculating on GPU
         try:
             self.base_dist = _build_mvn_from_cov(base_mu, base_cov, device)
@@ -69,23 +87,26 @@ class true_GPPrior(torch.distributions.distribution.Distribution):
             
         self.device = device
 
-    def check_input(self, x, dims=None):
-        assert x.ndim == 2, f'Input {x.shape} should have shape (n_points, dim)'
-        if dims:
-            assert x.shape[1] == len(dims), f'Input {x.shape} should have shape (n_points, dim)'
 
-    def new_dist(self, dims):
+    def new_dist(self, n_pos):
         """ Creates a Normal distribution at the points in x.
         x: locations to query at, a flattened grid; tensor (n_points, dim)
 
         returns: a gpytorch distribution corresponding to a Gaussian at x
         """
-        n_points = np.prod(dims)
-        grids = make_grid(dims)
+        jitter = 1e-6        
+        if isinstance(n_pos, (list, tuple)):
+            n_pos = make_grid(list(n_pos))
+        if isinstance(n_pos, np.ndarray):
+            n_pos_t = torch.from_numpy(n_pos).float()
+        else:
+            n_pos_t = n_pos.detach().clone().float()
+        n_points = len(n_pos_t)
+        grids = n_pos_t.cpu().numpy()
         matern_ker = matern_kernel_cov(grids, self.lengthscale, self.nu)
         
         base_mu = torch.zeros(n_points).float()
-        base_cov = torch.tensor(matern_ker).float() + 1e-6 * torch.eye(matern_ker.shape[0])
+        base_cov = torch.tensor(matern_ker).float() + jitter * torch.eye(matern_ker.shape[0])
         base_cov = base_cov.to(torch.float64)        
 
         try:
@@ -95,36 +116,65 @@ class true_GPPrior(torch.distributions.distribution.Distribution):
             
         return base_dist
     
-    def sample(self, dims, n_samples=1, n_channels=1):
+    def sample(self, n_pos, n_samples=1, n_channels=1):
         """ Draws samples from the GP prior.
-        dims: list of dimensions of inputs; e.g. for a 64x64 input grid, dims=[64, 64]
+        n_pos: torch.Tensor([n_points, x_dim])
         n_samples: number of samples to draw
         n_channels: number of independent channels to draw samples for
 
         returns: samples from the GP; tensor (n_samples, n_channels, dims[0], dims[1], ...)
         """
         
-        #x = x.to(self.device)
-        if dims == self.dims:
-            distr = self.base_dist
+        # n_pos can be either explicit positions [n_points, x_dim]
+        # or a dims list like [H, W] from ofm_ind_seq_likelihood.sample().
+        dims_out = None
+        if isinstance(n_pos, (list, tuple)):
+            dims_out = list(n_pos)
+            if self.dims is not None and dims_out == self.dims:
+                n_pos_t = self.n_pos
+            else:
+                n_pos_t = make_grid(dims_out)
+        elif isinstance(n_pos, np.ndarray):
+            n_pos_t = torch.from_numpy(n_pos).float()
         else:
-            distr = self.new_dist(dims)
+            n_pos_t = n_pos.detach().clone().float()
+
+        if torch.equal(n_pos_t, self.n_pos):
+            distr = self.base_dist
+            #print('yes')
+        else:
+            distr = self.new_dist(n_pos_t)
         samples = distr.sample(sample_shape = torch.Size([n_samples * n_channels, ]))
-        samples = samples.reshape(n_samples, n_channels, *dims)
+        if dims_out is not None:
+            samples = samples.reshape(n_samples, n_channels, *dims_out)
+        elif self.dims is not None:
+            samples = samples.reshape(n_samples, n_channels, *self.dims)
+        else:
+            samples = samples.reshape(n_samples, n_channels, -1)
         
         return samples
         
     
-    def sample_from_prior(self, dims, n_samples=1, n_channels=1):
+    def sample_from_prior(self, dims=None, n_samples=1, n_channels=1):
         """
         fixed prior
         """
-        samples = self.base_dist.sample(sample_shape = torch.Size([n_samples * n_channels, ]))
-        samples = samples.reshape(n_samples, n_channels, *dims)
+        if dims is not None and self.dims is not None and list(dims) != self.dims:
+            n_pos = make_grid(dims)
+            distr = self.new_dist(n_pos)
+            dims_out = list(dims)
+        else:
+            distr = self.base_dist
+            dims_out = self.dims
+        samples = distr.sample(sample_shape=torch.Size([n_samples * n_channels]))
+        if dims_out is not None:
+            samples = samples.reshape(n_samples, n_channels, *dims_out)
+        else:
+            samples = samples.reshape(n_samples, n_channels, -1)
         
         return samples           
     
-    def sample_train_data(self, dims, n_samples=1, n_channels=1, nbatch=1000):
+    def sample_train_data(self, n_samples=1, n_channels=1, nbatch=1000):
         """
         calculation in cuda, but saved in cpu.
         iteratively 
@@ -135,7 +185,7 @@ class true_GPPrior(torch.distributions.distribution.Distribution):
         nbatch = np.min([n_samples, nbatch])
               
         while sampled_num < n_samples:
-            temp_sample = self.sample_from_prior(dims, nbatch).cpu()
+            temp_sample = self.sample_from_prior(n_samples=nbatch, n_channels=n_channels).cpu()
             sampled_num += len(temp_sample)
             samples_all.append(temp_sample)
                 
